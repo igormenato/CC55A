@@ -4,12 +4,11 @@
 
 This repository contains Flex-based lexical analyzers and their regression tests.
 
-- `examples/`: the five example scanners from the assignment PDFs (`exemplo0.l` through `exemplo4.l`).
+- `examples/`: the five example scanners from the assignment (`exemplo0.l` through `exemplo4.l`).
 - `ids/`: the identifier analyzer, currently `c_identifiers.l`.
 - `tests/`: input/output fixtures plus the test runner `run_tests.sh`.
 - `build/`: generated C files produced by `flex`.
 - `bin/`: compiled executables produced by `gcc`.
-- `README.md`: quick usage notes.
 
 Keep generated files out of source changes unless the task explicitly requires them.
 
