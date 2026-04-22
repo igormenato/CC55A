@@ -1,0 +1,1 @@
+if box then collect, if obst then move(up,1)

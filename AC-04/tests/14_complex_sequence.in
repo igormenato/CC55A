@@ -1,0 +1,1 @@
+move(right,2), if box then push, move(up,1), if obst then move(left,3), move(down,2)

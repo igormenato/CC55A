@@ -1,0 +1,7 @@
+[project]
+name = "rbtlang"
+version = "1.0.0"
+description = "Gramatica ANTLR para linguagem de programacao rbtlang"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = ["antlr4-python3-runtime==4.13.2"]
