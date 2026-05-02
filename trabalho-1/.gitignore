@@ -1,0 +1,15 @@
+calc
+src/lex.yy.c
+src/bison-calc.tab.c
+src/bison-calc.tab.h
+*.o
+*.a
+*.so
+docs/*.pdf
+.vscode
+.idea/
+.zed
+*.tmp
+*~
+.DS_Store
+Thumbs.db
