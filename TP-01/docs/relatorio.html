@@ -1,0 +1,1380 @@
+<!doctype html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8" />
+        <title>
+            Relatório – Trabalho Prático 1: Analisadores Léxico e Sintático
+        </title>
+        <meta name="author" content="Compiladores 2026.1" />
+        <meta
+            name="description"
+            content="Relatório acadêmico da implementação de analisadores léxico e sintático com Flex e Bison, incluindo comando FOR e operadores lógicos AND/OR."
+        />
+        <meta
+            name="keywords"
+            content="Compiladores, Flex, Bison, Análise Léxica, Análise Sintática, AST, FOR, AND, OR"
+        />
+        <meta name="generator" content="Kami" />
+        <style>
+            @font-face {
+                font-family: "JetBrains Mono";
+                src: url("../.agents/skills/kami/assets/fonts/JetBrainsMono.woff2")
+                    format("woff2");
+                font-weight: 400;
+                font-style: normal;
+            }
+            @font-face {
+                font-family: "JetBrains Mono";
+                src: url("../.agents/skills/kami/assets/fonts/JetBrainsMono.woff2")
+                    format("woff2");
+                font-weight: 500;
+                font-style: normal;
+            }
+
+            @page {
+                size: A4;
+                margin: 20mm 22mm 22mm 22mm;
+                background: #f5f4ed;
+                @top-right {
+                    content: string(section-title);
+                    font-family: Charter, Georgia, Palatino, serif;
+                    font-size: 8pt;
+                    color: #6b6a64;
+                }
+                @bottom-center {
+                    content: counter(page) "  ·  " string(doc-title);
+                    font-family: Charter, Georgia, Palatino, serif;
+                    font-size: 9pt;
+                    color: #6b6a64;
+                }
+            }
+            @page:first {
+                @top-right {
+                    content: "";
+                }
+                @bottom-center {
+                    content: "";
+                }
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            :root {
+                --parchment: #f5f4ed;
+                --ivory: #faf9f5;
+                --near-black: #141413;
+                --dark-warm: #3d3d3a;
+                --olive: #504e49;
+                --stone: #6b6a64;
+                --brand: #1b365d;
+                --border: #e8e6dc;
+                --border-soft: #e5e3d8;
+                --tag-bg: #e4ecf5;
+                --serif: Charter, Georgia, Palatino, "Times New Roman", serif;
+                --sans: var(--serif);
+                --mono:
+                    "JetBrains Mono", "SF Mono", "Fira Code", Consolas, Monaco,
+                    monospace;
+            }
+
+            html,
+            body {
+                background: var(--parchment);
+            }
+            @media screen {
+                body {
+                    max-width: 210mm;
+                    margin: 0 auto;
+                    padding: 20mm 22mm 22mm 22mm;
+                }
+            }
+
+            body {
+                color: var(--near-black);
+                font-family: var(--serif);
+                font-size: 10.5pt;
+                line-height: 1.55;
+                widows: 3;
+                orphans: 3;
+                string-set: doc-title "Relatório – TP1 Compiladores";
+            }
+
+            .sans {
+                font-family: var(--sans);
+            }
+
+            /* COVER */
+            .cover {
+                min-height: 257mm;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: center;
+                padding: 0;
+                break-after: page;
+                text-align: center;
+            }
+            .cover-inst {
+                font-family: var(--sans);
+                font-size: 10pt;
+                color: var(--brand);
+                letter-spacing: 2.5pt;
+                text-transform: uppercase;
+                font-weight: 500;
+                margin-top: 30mm;
+                margin-bottom: 25mm;
+            }
+            .cover-title {
+                font-size: 36pt;
+                font-weight: 500;
+                color: var(--near-black);
+                line-height: 1.12;
+                letter-spacing: -0.5pt;
+                margin-bottom: 70mm;
+            }
+            .cover-authors {
+                font-family: var(--serif);
+                font-size: 14pt;
+                color: var(--near-black);
+                line-height: 1.8;
+            }
+            .cover-local {
+                font-family: var(--sans);
+                font-size: 11pt;
+                color: var(--stone);
+                line-height: 1.6;
+                margin-top: auto;
+                margin-bottom: 20mm;
+            }
+
+            /* TOC */
+            .toc {
+                break-after: page;
+            }
+            .toc h2 {
+                font-size: 22pt;
+                font-weight: 500;
+                margin-bottom: 14pt;
+                border-left: 2.5pt solid var(--brand);
+                border-radius: 1.5pt;
+                padding-left: 8pt;
+            }
+            .toc-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+                padding: 6pt 0;
+                border-bottom: 0.3pt dotted var(--border);
+                font-size: 11pt;
+            }
+            .toc-item:last-of-type {
+                border-bottom: none;
+            }
+            .toc-num {
+                color: var(--brand);
+                font-weight: 500;
+                min-width: 30pt;
+                font-variant-numeric: tabular-nums;
+            }
+            .toc-title {
+                flex: 1;
+                color: var(--near-black);
+                padding-left: 6pt;
+            }
+            .toc-page {
+                color: var(--stone);
+                font-variant-numeric: tabular-nums;
+            }
+
+            /* HEADINGS */
+            h1 {
+                font-size: 22pt;
+                font-weight: 500;
+                line-height: 1.15;
+                letter-spacing: -0.3pt;
+                margin: 0 0 10pt 0;
+                border-left: 2.5pt solid var(--brand);
+                border-radius: 1.5pt;
+                padding-left: 8pt;
+                color: var(--near-black);
+                break-after: avoid;
+                string-set: section-title content();
+            }
+            h2 {
+                font-size: 15pt;
+                font-weight: 500;
+                line-height: 1.25;
+                margin: 22pt 0 8pt 0;
+                color: var(--near-black);
+                break-after: avoid;
+            }
+            h3 {
+                font-size: 12pt;
+                font-weight: 500;
+                line-height: 1.3;
+                margin: 16pt 0 6pt 0;
+                color: var(--dark-warm);
+                break-after: avoid;
+            }
+
+            .chapter-num {
+                font-family: var(--sans);
+                font-size: 10pt;
+                color: var(--brand);
+                letter-spacing: 1pt;
+                text-transform: uppercase;
+                font-weight: 500;
+                margin-bottom: 6pt;
+            }
+
+            p {
+                margin: 0 0 10pt 0;
+                line-height: 1.55;
+                color: var(--near-black);
+                widows: 2;
+                orphans: 2;
+            }
+            .lead {
+                font-size: 11.5pt;
+                line-height: 1.55;
+                color: var(--dark-warm);
+                margin-bottom: 14pt;
+            }
+            .hl {
+                color: var(--brand);
+                font-weight: 500;
+            }
+            strong {
+                font-weight: 500;
+            }
+
+            ul,
+            ol {
+                margin: 6pt 0 10pt 0;
+                padding-left: 20pt;
+                line-height: 1.55;
+            }
+            ul li::marker {
+                color: var(--brand);
+            }
+            ol li::marker {
+                color: var(--brand);
+                font-weight: 500;
+            }
+
+            blockquote,
+            .quote {
+                border-left: 2pt solid var(--brand);
+                margin: 12pt 0;
+                padding: 4pt 0 4pt 16pt;
+                color: var(--olive);
+                line-height: 1.55;
+                break-inside: avoid;
+            }
+
+            code {
+                font-family: var(--mono);
+                font-size: 9pt;
+                background: var(--ivory);
+                padding: 1pt 4pt;
+                border-radius: 2pt;
+                color: var(--dark-warm);
+            }
+            pre {
+                font-family: var(--mono);
+                font-size: 8.5pt;
+                line-height: 1.45;
+                background: var(--ivory);
+                border-radius: 4pt;
+                padding: 10pt 14pt;
+                margin: 10pt 0;
+                white-space: pre-wrap;
+                color: var(--near-black);
+                break-inside: avoid;
+            }
+            pre code {
+                background: transparent;
+                padding: 0;
+                font-size: inherit;
+            }
+
+            table,
+            .kami-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 9.5pt;
+                margin: 12pt 0;
+                break-inside: avoid;
+            }
+            table th,
+            .kami-table th {
+                text-align: left;
+                font-family: var(--sans);
+                font-weight: 500;
+                color: var(--dark-warm);
+                padding: 6pt 8pt;
+                border-bottom: 1pt solid var(--border);
+                background: var(--ivory);
+            }
+            table td,
+            .kami-table td {
+                padding: 5pt 8pt;
+                border-bottom: 0.3pt solid var(--border-soft);
+                vertical-align: top;
+            }
+
+            .callout {
+                background: var(--ivory);
+                border-left: 2pt solid var(--brand);
+                padding: 10pt 14pt;
+                border-radius: 3pt;
+                margin: 12pt 0;
+                line-height: 1.55;
+                break-inside: avoid;
+            }
+            .takeaway {
+                background: var(--ivory);
+                border-radius: 4pt;
+                padding: 10pt 14pt;
+                margin: 14pt 0;
+                break-inside: avoid;
+            }
+            .takeaway-label {
+                font-family: var(--sans);
+                font-size: 9pt;
+                color: var(--brand);
+                letter-spacing: 1pt;
+                text-transform: uppercase;
+                font-weight: 500;
+                margin-bottom: 4pt;
+            }
+
+            figure {
+                margin: 14pt 0;
+                break-inside: avoid;
+            }
+            figure img {
+                max-width: 100%;
+                height: auto;
+                display: block;
+                margin: 0 auto;
+            }
+            figcaption {
+                font-family: var(--sans);
+                font-size: 9pt;
+                color: var(--stone);
+                margin-top: 6pt;
+                text-align: center;
+            }
+
+            .chapter {
+                break-before: page;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- COVER -->
+        <section class="cover">
+            <div class="cover-inst">
+                Universidade Tecnológica Federal do Paraná<br />Ciência da
+                Computação
+            </div>
+            <div class="cover-title">
+                Trabalho Prático 1<br />Analisadores Léxico e Sintático
+            </div>
+
+            <div class="cover-authors">
+                Igor Fortes Oliveira Lobo<br />
+                Guilherme Scorsim Dos Santos
+            </div>
+            <div class="cover-local">
+                Ponta Grossa – PR<br />
+                2026
+            </div>
+        </section>
+
+        <!-- TOC -->
+        <section class="toc">
+            <h2>Sumário</h2>
+            <div class="toc-item">
+                <span class="toc-num">01</span
+                ><span class="toc-title">Apresentação da Linguagem</span
+                ><span class="toc-page">03</span>
+            </div>
+            <div class="toc-item">
+                <span class="toc-num">02</span
+                ><span class="toc-title"
+                    >Regras de Análise Léxica e Diagramas de Transição</span
+                ><span class="toc-page">04</span>
+            </div>
+            <div class="toc-item">
+                <span class="toc-num">03</span
+                ><span class="toc-title"
+                    >Analisador Léxico – Implementação em Flex</span
+                ><span class="toc-page">06</span>
+            </div>
+            <div class="toc-item">
+                <span class="toc-num">04</span
+                ><span class="toc-title">Tabela de Símbolos</span
+                ><span class="toc-page">08</span>
+            </div>
+            <div class="toc-item">
+                <span class="toc-num">05</span
+                ><span class="toc-title"
+                    >Regras de Análise Sintática – BNF e Diagramas</span
+                ><span class="toc-page">09</span>
+            </div>
+            <div class="toc-item">
+                <span class="toc-num">06</span
+                ><span class="toc-title"
+                    >Analisador Sintático – Implementação em Bison</span
+                ><span class="toc-page">11</span>
+            </div>
+            <div class="toc-item">
+                <span class="toc-num">07</span
+                ><span class="toc-title">Conjunto de Testes e Resultados</span
+                ><span class="toc-page">13</span>
+            </div>
+            <div class="toc-item">
+                <span class="toc-num">08</span
+                ><span class="toc-title"
+                    >Uso de Ferramentas de Inteligência Artificial</span
+                ><span class="toc-page">15</span>
+            </div>
+            <div class="toc-item">
+                <span class="toc-num">09</span
+                ><span class="toc-title">Referências</span
+                ><span class="toc-page">16</span>
+            </div>
+        </section>
+
+        <!-- Chapter 01 -->
+        <section class="chapter">
+            <div class="chapter-num">01 · Apresentação da Linguagem</div>
+            <h1>Apresentação da Linguagem de Programação Básica</h1>
+
+            <p class="lead">
+                A linguagem implementada neste trabalho é uma
+                <span class="hl">calculadora avançada</span> estendida com
+                construções de controle de fluxo, funções pré-definidas, funções
+                definidas pelo usuário e, como requisitos deste trabalho, o
+                comando <code>FOR</code> e os operadores lógicos
+                <code>AND</code> e <code>OR</code>.
+            </p>
+
+            <h2>Características Gerais</h2>
+            <p>A linguagem possui as seguintes características:</p>
+            <ul>
+                <li>
+                    <strong>Variáveis e atribuições:</strong> identificadores
+                    alfanuméricos podem receber valores numéricos.
+                </li>
+                <li>
+                    <strong>Expressões aritméticas:</strong> operadores
+                    <code>+</code>, <code>-</code>, <code>*</code>,
+                    <code>/</code> com precedência e associatividade padrão.
+                </li>
+                <li>
+                    <strong>Expressões de comparação:</strong> operadores
+                    <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>,
+                    <code>&lt;=</code>, <code>==</code>, <code>&lt;&gt;</code>.
+                </li>
+                <li>
+                    <strong>Operadores lógicos:</strong> <code>AND</code> e
+                    <code>OR</code>, associativos à esquerda, com precedência
+                    menor que aritméticos e maior que comparações (para
+                    <code>AND</code>).
+                </li>
+                <li>
+                    <strong>Controle de fluxo:</strong> comandos
+                    <code>if/then/else</code>, <code>while/do</code> e
+                    <code>for(init; cond; inc)</code>.
+                </li>
+                <li>
+                    <strong>Funções pré-definidas:</strong> <code>sqrt</code>,
+                    <code>exp</code>, <code>log</code>, <code>print</code>.
+                </li>
+                <li>
+                    <strong>Funções definidas pelo usuário:</strong> declaradas
+                    com <code>let nome(arg1, ...) = corpo;</code>.
+                </li>
+            </ul>
+
+            <h2>Tipos de Dados</h2>
+            <p>
+                A linguagem é tipada de forma simples: todos os valores são
+                <span class="hl">números em ponto flutuante</span>
+                (double-precision). Não há tipos booleanos explícitos; o valor
+                <code>0.0</code> representa falso e qualquer valor diferente de
+                zero representa verdadeiro.
+            </p>
+
+            <div class="callout">
+                <strong>Exemplo de programa válido:</strong><br />
+                <code
+                    >sum = 0; for (i = 1; i &lt;= 10; i = i + 1) sum = sum + i;
+                    print(sum);</code
+                >
+            </div>
+        </section>
+
+        <!-- Chapter 02 -->
+        <section class="chapter">
+            <div class="chapter-num">02 · Análise Léxica</div>
+            <h1>Regras de Análise Léxica e Diagramas de Transição</h1>
+
+            <p class="lead">
+                A análise léxica é responsável por reconhecer os
+                <span class="hl">tokens</span> da linguagem a partir do fluxo de
+                caracteres de entrada. Cada token corresponde a uma unidade
+                sintática indivisível.
+            </p>
+
+            <h2>Conjunto de Tokens</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Categoria</th>
+                        <th>Tokens</th>
+                        <th>Descrição</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Palavras-chave</td>
+                        <td>
+                            <code>if</code>, <code>then</code>,
+                            <code>else</code>, <code>while</code>,
+                            <code>do</code>, <code>let</code>, <code>for</code>,
+                            <code>and</code>, <code>or</code>
+                        </td>
+                        <td>Reservadas da linguagem</td>
+                    </tr>
+                    <tr>
+                        <td>Identificadores</td>
+                        <td><code>NAME</code></td>
+                        <td>Sequência alfanumérica iniciada por letra</td>
+                    </tr>
+                    <tr>
+                        <td>Números</td>
+                        <td><code>NUMBER</code></td>
+                        <td>Literais inteiros ou de ponto flutuante</td>
+                    </tr>
+                    <tr>
+                        <td>Operadores</td>
+                        <td>
+                            <code>+</code>, <code>-</code>, <code>*</code>,
+                            <code>/</code>, <code>=</code>, <code>CMP</code>
+                        </td>
+                        <td>Aritméticos, atribuição e comparação</td>
+                    </tr>
+                    <tr>
+                        <td>Separadores</td>
+                        <td>
+                            <code>(</code>, <code>)</code>, <code>;</code>,
+                            <code>,</code>
+                        </td>
+                        <td>Delimitadores sintáticos</td>
+                    </tr>
+                    <tr>
+                        <td>Funções</td>
+                        <td><code>FUNC</code></td>
+                        <td>sqrt, exp, log, print</td>
+                    </tr>
+                    <tr>
+                        <td>Especial</td>
+                        <td><code>EOL</code></td>
+                        <td>Fim de linha (newline)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Diagramas de Transição</h2>
+            <p>
+                Os diagramas de transição ilustram os
+                <span class="hl">autômatos finitos</span> que reconhecem cada
+                classe de token a partir do fluxo de caracteres de entrada. Eles
+                foram elaborados utilizando a ferramenta
+                <a href="https://regex-vis.com/">Regex-Vis</a>.
+            </p>
+
+            <h3>Identificadores e Palavras-chave</h3>
+            <figure>
+                <img src="assets/01_id%20and%20reservedkeywords.svg" alt="Identificadores e Palavras-chave" style="max-width:100%;height:auto;" />
+                <figcaption>
+                    Figura 9 – Autômato finito para <code>NAME</code> e
+                    palavras-chave
+                </figcaption>
+            </figure>
+
+            <h3>Números (inteiros e ponto flutuante)</h3>
+            <figure>
+                <img src="assets/02_numbers(int%20and%20float).svg" alt="Números" style="max-width:100%;height:auto;" />
+                <figcaption>
+                    Figura 10 – Autômato finito para <code>NUMBER</code>
+                </figcaption>
+            </figure>
+
+            <h3>Operadores de Comparação</h3>
+            <figure>
+                <img src="assets/03_cmp.svg" alt="Operadores de Comparação" style="max-width:100%;height:auto;" />
+                <figcaption>
+                    Figura 11 – Autômato finito para <code>CMP</code> (dois
+                    caracteres)
+                </figcaption>
+            </figure>
+
+            <h3>Operadores Lógicos</h3>
+            <figure>
+                <img src="assets/04_logic%20op.svg" alt="Operadores Lógicos" style="max-width:100%;height:auto;" />
+                <figcaption>
+                    Figura 12 – Autômato finito para <code>AND</code> e
+                    <code>OR</code>
+                </figcaption>
+            </figure>
+
+            <h3>Funções Pré-definidas</h3>
+            <figure>
+                <img src="assets/05_predefined.svg" alt="Funções Pré-definidas" style="max-width:100%;height:auto;" />
+                <figcaption>
+                    Figura 13 – Autômato finito para <code>FUNC</code>
+                </figcaption>
+            </figure>
+
+            <div class="takeaway">
+                <div class="takeaway-label">
+                    Observação sobre operadores de 1 caractere
+                </div>
+                Operadores simples como <code>+</code>, <code>-</code>,
+                <code>*</code>, <code>/</code>, <code>=</code>, <code>(</code>,
+                <code>)</code>, <code>;</code> e <code>,</code> são reconhecidos
+                por transições diretas de um único caractere e, por serem
+                triviais, não possuem diagramas dedicados.
+            </div>
+        </section>
+
+        <!-- Chapter 03 -->
+        <section class="chapter">
+            <div class="chapter-num">03 · Implementação Léxica</div>
+            <h1>Analisador Léxico – Implementação em Flex</h1>
+
+            <p class="lead">
+                O analisador léxico foi implementado utilizando a ferramenta
+                <span class="hl">Flex</span> (Fast Lexical Analyzer Generator).
+                O arquivo <code>lexer.l</code> define as expressões regulares
+                para cada token e as ações semânticas associadas.
+            </p>
+
+            <h2>Estrutura do Arquivo <code>lexer.l</code></h2>
+            <p>O arquivo segue a estrutura padrão de uma especificação Flex:</p>
+            <ol>
+                <li>
+                    <strong>Seção de opções:</strong>
+                    <code
+                        >%option noyywrap nodefault yylineno noinput
+                        nounput</code
+                    >
+                </li>
+                <li>
+                    <strong>Seção de inclusões:</strong> headers do Bison para
+                    tipos compartilhados
+                </li>
+                <li>
+                    <strong>Seção de definições:</strong> macro
+                    <code>EXP</code> para expoentes de ponto flutuante
+                </li>
+                <li><strong>Seção de regras:</strong> padrão regex → ação C</li>
+            </ol>
+
+            <h2>Regras Lexicas Principais</h2>
+            <pre><code>"+" |
+"-" |
+"*" |
+"/" |
+"=" |
+"," |
+";" |
+"(" |
+")"     { return yytext[0]; }
+
+"&gt;"     { yylval.fn = 1; return CMP; }
+"&lt;"     { yylval.fn = 2; return CMP; }
+"&lt;&gt;"    { yylval.fn = 3; return CMP; }
+"=="    { yylval.fn = 4; return CMP; }
+"&gt;="    { yylval.fn = 5; return CMP; }
+"&lt;="    { yylval.fn = 6; return CMP; }
+
+"if"    { return IF; }
+"then"  { return THEN; }
+"else"  { return ELSE; }
+"while" { return WHILE; }
+"do"    { return DO; }
+"let"   { return LET; }
+<span class="hl">"for"   { return FOR; }
+"and"   { return AND; }
+"or"    { return OR; }</span>
+
+"sqrt"  { yylval.fn = B_sqrt; return FUNC; }
+"exp"   { yylval.fn = B_exp;  return FUNC; }
+"log"   { yylval.fn = B_log;  return FUNC; }
+"print" { yylval.fn = B_print;return FUNC; }
+
+[a-zA-Z][a-zA-Z0-9]* { yylval.s = lookup(yytext); return NAME; }
+
+[0-9]+"."[0-9]*{EXP}? |
+"."?[0-9]+{EXP}? { yylval.d = atof(yytext); return NUMBER; }</code></pre>
+
+            <h2>Novos Tokens Adicionados</h2>
+            <p>
+                Em relação à calculadora original, foram introduzidos três novos
+                tokens:
+            </p>
+            <ul>
+                <li>
+                    <code>FOR</code> – palavra-chave <code>for</code>,
+                    necessária para o comando de laço contado.
+                </li>
+                <li>
+                    <code>AND</code> – operador lógico <code>and</code>,
+                    representando a conjunção booleana.
+                </li>
+                <li>
+                    <code>OR</code> – operador lógico <code>or</code>,
+                    representando a disjunção booleana.
+                </li>
+            </ul>
+
+            <div class="takeaway">
+                <div class="takeaway-label">Ponto de atenção</div>
+                As palavras-chave são verificadas <strong>antes</strong> da
+                regra genérica de identificadores
+                (<code>[a-zA-Z][a-zA-Z0-9]*</code>), garantindo que
+                <code>for</code>, <code>and</code> e <code>or</code> sejam
+                reconhecidos como tokens reservados e não como nomes de
+                variáveis.
+            </div>
+        </section>
+
+        <!-- Chapter 04 -->
+        <section class="chapter">
+            <div class="chapter-num">04 · Tabela de Símbolos</div>
+            <h1>Tabela de Símbolos</h1>
+
+            <p class="lead">
+                A <span class="hl">Tabela de Símbolos (TS)</span> armazena
+                informações sobre identificadores da linguagem. Nela, cada
+                símbolo pode representar uma variável ou uma função definida
+                pelo usuário.
+            </p>
+
+            <h2>Estrutura do Símbolo</h2>
+            <pre><code>struct symbol {
+    char *name;           /* nome do identificador */
+    double value;         /* valor atual (variável) */
+    struct ast *func;     /* corpo da função (AST) */
+    struct symlist *syms; /* lista de argumentos */
+};</code></pre>
+
+            <h2>Gerenciamento da TS</h2>
+            <p>
+                A tabela é implementada como um
+                <strong>array de tamanho fixo</strong> (<code>NHASH = 9997</code
+                >) com tratamento de colisões por
+                <span class="hl">sondagem linear</span>. A função de hash
+                utiliza o algoritmo:
+            </p>
+            <pre><code>hash = hash * 9 ^ c;</code></pre>
+
+            <h2>Funções Principais</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Função</th>
+                        <th>Assinatura</th>
+                        <th>Descrição</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>lookup</code></td>
+                        <td><code>struct symbol *lookup(char *sym)</code></td>
+                        <td>Busca ou insere um símbolo na TS</td>
+                    </tr>
+                    <tr>
+                        <td><code>newsymlist</code></td>
+                        <td><code>struct symlist *newsymlist(...)</code></td>
+                        <td>Cria lista encadeada de argumentos</td>
+                    </tr>
+                    <tr>
+                        <td><code>symlistfree</code></td>
+                        <td>
+                            <code>void symlistfree(struct symlist *sl)</code>
+                        </td>
+                        <td>Libera lista de símbolos</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Correção de Linkage</h2>
+            <p>
+                No código original, <code>symtab</code> era definido diretamente
+                no header (<code>bison-calc.h</code>), causando
+                <strong>múltiplas definições</strong> no linker quando mais de
+                um arquivo objeto o incluía. A correção consistiu em:
+            </p>
+            <ul>
+                <li>
+                    Declarar <code>extern struct symbol symtab[NHASH];</code> no
+                    header.
+                </li>
+                <li>
+                    Definir <code>struct symbol symtab[NHASH];</code> em
+                    <code>calc_aux.c</code>.
+                </li>
+            </ul>
+        </section>
+
+        <!-- Chapter 05 -->
+        <section class="chapter">
+            <div class="chapter-num">05 · Análise Sintática</div>
+            <h1>Regras de Análise Sintática – BNF e Diagramas</h1>
+
+            <p class="lead">
+                A gramática da linguagem foi formalizada em notação
+                <span class="hl">BNF (Backus-Naur Form)</span> estendida e
+                posteriormente transcrita para a ferramenta Bison.
+            </p>
+
+            <h2>Gramática em BNF Estendida</h2>
+            <pre><code>calclist ::= /* vazio */
+           | calclist stmt EOL
+           | calclist LET NAME '(' symlist ')' '=' list EOL
+           | calclist error EOL
+
+stmt     ::= IF exp THEN list
+           | IF exp THEN list ELSE list
+           | WHILE exp DO list
+           | FOR '(' exp ';' exp ';' exp ')' list
+           | exp
+
+list     ::= /* vazio */
+           | stmt ';' list
+
+exp      ::= exp CMP exp
+           | exp AND exp
+           | exp OR exp
+           | exp '+' exp
+           | exp '-' exp
+           | exp '*' exp
+           | exp '/' exp
+           | '(' exp ')'
+           | NUMBER
+           | NAME
+           | NAME '=' exp
+           | FUNC '(' explist ')'
+           | NAME '(' explist ')'
+
+explist  ::= exp
+           | exp ',' explist
+
+symlist  ::= NAME
+           | NAME ',' symlist</code></pre>
+
+            <h2>Precedência e Associatividade</h2>
+            <p>A tabela de precedência, do menor para o maior nível, é:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nível</th>
+                        <th>Operadores</th>
+                        <th>Associatividade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1 (menor)</td>
+                        <td><code>OR</code></td>
+                        <td>Esquerda</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td><code>AND</code></td>
+                        <td>Esquerda</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>
+                            <code>CMP</code> (==, &lt;&gt;, &lt;, &gt;, &lt;=,
+                            &gt;=)
+                        </td>
+                        <td>Não-associativo</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td><code>=</code> (atribuição)</td>
+                        <td>Direita</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td><code>+</code>, <code>-</code></td>
+                        <td>Esquerda</td>
+                    </tr>
+                    <tr>
+                        <td>6 (maior)</td>
+                        <td><code>*</code>, <code>/</code></td>
+                        <td>Esquerda</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Diagramas de Sintaxe</h2>
+            <p>
+                Os diagramas de sintaxe a seguir foram gerados pela ferramenta
+                <a href="https://bottlecaps.de/rr/ui"
+                    >Railroad Diagram Generator</a
+                >
+                a partir da gramática em EBNF da linguagem.
+            </p>
+
+            <h3>Programa (calclist)</h3>
+            <figure>
+                <img src="assets/06_calclist.svg" alt="Diagrama de sintaxe do nível superior calclist" style="max-width:100%;height:auto;" />
+                <figcaption>
+                    Figura 1 – Diagrama de sintaxe do nível superior
+                    <code>calclist</code>
+                </figcaption>
+            </figure>
+
+            <h3>Comando (stmt)</h3>
+            <figure>
+                <img src="assets/07_stmt.svg" alt="Diagrama de sintaxe do comando stmt" style="max-width:100%;height:auto;" />
+                <figcaption>
+                    Figura 2 – Diagrama de sintaxe do comando
+                    <code>stmt</code> (if, while, for, exp)
+                </figcaption>
+            </figure>
+
+            <h3>Lista de Comandos (list)</h3>
+            <figure>
+                <img src="assets/08_list.svg" alt="Diagrama de sintaxe da lista de comandos list" style="max-width:100%;height:auto;" />
+                <figcaption>
+                    Figura 3 – Diagrama de sintaxe da lista de comandos
+                    <code>list</code>
+                </figcaption>
+            </figure>
+
+            <h3>Expressão (exp)</h3>
+            <figure>
+                <img src="assets/09_exp.svg" alt="Diagrama de sintaxe das expressões exp" style="max-width:100%;height:auto;" />
+                <figcaption>
+                    Figura 4 – Diagrama de sintaxe das expressões
+                    <code>exp</code> (inclui AND, OR, CMP e aritméticos)
+                </figcaption>
+            </figure>
+
+            <h3>Terminais da Linguagem</h3>
+
+            <figure>
+                <img src="assets/10_name.svg" alt="Diagrama de sintaxe do terminal NAME" style="max-width:100%;height:auto;" />
+                <figcaption>
+                    Figura 5 – Diagrama de sintaxe do terminal <code>NAME</code>
+                </figcaption>
+            </figure>
+
+            <figure>
+                <img src="assets/11_number.svg" alt="Diagrama de sintaxe do terminal NUMBER" style="max-width:100%;height:auto;" />
+                <figcaption>
+                    Figura 6 – Diagrama de sintaxe do terminal
+                    <code>NUMBER</code>
+                </figcaption>
+            </figure>
+
+            <figure>
+                <img src="assets/12_func.svg" alt="Diagrama de sintaxe do terminal FUNC" style="max-width:100%;height:auto;" />
+                <figcaption>
+                    Figura 7 – Diagrama de sintaxe do terminal <code>FUNC</code>
+                </figcaption>
+            </figure>
+
+            <figure>
+                <img src="assets/13_cmp.svg" alt="Diagrama de sintaxe do terminal CMP" style="max-width:100%;height:auto;" />
+                <figcaption>
+                    Figura 8 – Diagrama de sintaxe do terminal <code>CMP</code>
+                </figcaption>
+            </figure>
+        </section>
+
+        <!-- Chapter 06 -->
+        <section class="chapter">
+            <div class="chapter-num">06 · Implementação Sintática</div>
+            <h1>Analisador Sintático – Implementação em Bison</h1>
+
+            <p class="lead">
+                O analisador sintático foi implementado com a ferramenta
+                <span class="hl">Bison</span>, gerando um parser LALR(1) a
+                partir da gramática formalizada.
+            </p>
+
+            <h2>Estrutura do Arquivo <code>parser.y</code></h2>
+            <p>O arquivo Bison contém três seções principais:</p>
+            <ol>
+                <li>
+                    <strong>Declarações:</strong> union de tipos, tokens,
+                    precedência e tipos semânticos.
+                </li>
+                <li>
+                    <strong>Regras gramaticais:</strong> produções com ações em
+                    C para construção da AST.
+                </li>
+                <li>
+                    <strong>Rotinas auxiliares:</strong> vazias neste projeto
+                    (funções estão em <code>calc_aux.c</code>).
+                </li>
+            </ol>
+
+            <h2>Declarações de Precedência</h2>
+            <pre><code>%left OR
+%left AND
+%nonassoc &lt;fn&gt; CMP
+%right '='
+%left '+' '-'
+%left '*' '/'</code></pre>
+
+            <h2>Regras Sintáticas Adicionadas</h2>
+
+            <h3>Comando FOR</h3>
+            <pre><code>stmt: ...
+    | FOR '(' exp ';' exp ';' exp ')' list
+        { $$ = newfor('R', $3, $5, $7, $9); }</code></pre>
+            <p>
+                A regra captura três expressões (inicialização, condição,
+                incremento) e uma lista de comandos. O nó AST resultante é do
+                tipo <code>'R'</code> e utiliza a estrutura
+                <code>struct forloop</code>.
+            </p>
+
+            <h3>Operadores lógicos</h3>
+            <pre><code>exp: ...
+   | exp AND exp { $$ = newast('A', $1, $3); }
+   | exp OR  exp { $$ = newast('O', $1, $3); }</code></pre>
+
+            <h2>Árvore Sintática Abstrata (AST)</h2>
+            <p>
+                A AST é o pilar da implementação. Cada nó possui um
+                <code>nodetype</code> que determina sua semântica. Os novos nós
+                adicionados foram:
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nodetype</th>
+                        <th>Estrutura</th>
+                        <th>Significado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>'R'</code></td>
+                        <td><code>struct forloop</code></td>
+                        <td>Comando FOR (init, cond, inc, body)</td>
+                    </tr>
+                    <tr>
+                        <td><code>'A'</code></td>
+                        <td><code>struct ast</code></td>
+                        <td>Operador lógico AND</td>
+                    </tr>
+                    <tr>
+                        <td><code>'O'</code></td>
+                        <td><code>struct ast</code></td>
+                        <td>Operador lógico OR</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Avaliação da AST</h2>
+            <p>
+                A função <code>eval(struct ast *a)</code> percorre a árvore
+                recursivamente. Os novos casos implementados:
+            </p>
+            <pre><code>case 'A':
+    v = (eval(a->l) != 0 && eval(a->r) != 0) ? 1 : 0;
+    break;
+case 'O':
+    v = (eval(a->l) != 0 || eval(a->r) != 0) ? 1 : 0;
+    break;
+case 'R': {
+    struct forloop *fl = (struct forloop *)a;
+    v = 0.0;
+    eval(fl->init);
+    if (fl->body) {
+        while (eval(fl->cond) != 0) {
+            v = eval(fl->body);
+            eval(fl->inc);
+        }
+    }
+    break;
+}</code></pre>
+        </section>
+
+        <!-- Chapter 07 -->
+        <section class="chapter">
+            <div class="chapter-num">07 · Testes</div>
+            <h1>Conjunto de Testes e Resultados</h1>
+
+            <p class="lead">
+                Foi elaborada uma
+                <span class="hl">suite de testes automatizada</span> com 20
+                cenários, cobrindo regressão da calculadora original e as novas
+                funcionalidades. Os testes são executados via
+                <code>make test</code>.
+            </p>
+
+            <h2>Estrutura dos Testes</h2>
+            <p>
+                Os testes residem na pasta <code>tests/</code>, organizados em
+                pares <code>.in</code> (entrada) e <code>.out</code> (saída
+                esperada):
+            </p>
+            <pre><code>tests/
+├── run_tests.sh
+├── aritmetica.in          ├── aritmetica.out
+├── funcao_usuario.in      ├── funcao_usuario.out
+├── if_then_else_true.in   ├── if_then_else_true.out
+├── while_loop.in          ├── while_loop.out
+├── for_basico.in          ├── for_basico.out
+├── for_print.in           ├── for_print.out
+├── for_multiplos.in       ├── for_multiplos.out
+├── and_00.in ... and_11.in├── and_00.out ... and_11.out
+├── or_00.in ... or_11.in  ├── or_00.out ... or_11.out
+├── precedencia_*.in       ├── precedencia_*.out
+└── sqrt.in                └── sqrt.out</code></pre>
+
+            <h2>Cenários de Teste</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Categoria</th>
+                        <th>Testes</th>
+                        <th>Objetivo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Regressão</td>
+                        <td>
+                            aritmetica, funcao_usuario, if/then/else, while,
+                            sqrt
+                        </td>
+                        <td>
+                            Garantir que funcionalidades originais permanecem
+                            intactas
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>FOR</td>
+                        <td>for_basico, for_print, for_multiplos</td>
+                        <td>
+                            Validar inicialização, condição, incremento e corpo
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>AND</td>
+                        <td>and_00, and_01, and_10, and_11</td>
+                        <td>Testar todas as combinações de truthiness</td>
+                    </tr>
+                    <tr>
+                        <td>OR</td>
+                        <td>or_00, or_01, or_10, or_11</td>
+                        <td>Testar todas as combinações de truthiness</td>
+                    </tr>
+                    <tr>
+                        <td>Precedência</td>
+                        <td>precedencia_and_or, cmp_and, cmp_or</td>
+                        <td>Verificar ordem correta de avaliação</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Execução e Resultados</h2>
+            <pre><code>$ make test
+...
+Resultado: 20 passaram, 0 falharam
+========================================</code></pre>
+
+            <div class="takeaway">
+                <div class="takeaway-label">Resultado</div>
+                Todos os 20 testes executaram com sucesso, demonstrando que
+                tanto o analisador léxico quanto o sintático tratam corretamente
+                os elementos da linguagem, incluindo os novos comandos
+                <code>FOR</code>, <code>AND</code> e <code>OR</code>.
+            </div>
+        </section>
+
+        <!-- Chapter 08 -->
+        <section class="chapter">
+            <div class="chapter-num">08 · Uso de IA</div>
+            <h1>Uso de Ferramentas de Inteligência Artificial</h1>
+
+            <p class="lead">
+                Conforme orientação do documento de trabalho (item 8), este
+                capítulo descreve
+                <span class="hl">onde, como e quais</span> ferramentas de
+                inteligência artificial foram utilizadas no desenvolvimento
+                deste projeto.
+            </p>
+
+            <h2>Ferramenta Utilizada</h2>
+            <p>
+                Foi utilizado o assistente de código
+                <strong>OpenCode (Kimi k2.6)</strong>, integrado ao ambiente de
+                desenvolvimento, para dar suporte nas seguintes etapas:
+            </p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Etapa</th>
+                        <th>Uso da IA</th>
+                        <th>Intervenção humana</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Entendimento da linguagem base</td>
+                        <td>
+                            Leitura e explicação dos arquivos de referência
+                            (<code>ref/src/</code>)
+                        </td>
+                        <td>Análise crítica das decisões de design</td>
+                    </tr>
+                    <tr>
+                        <td>Implementação do lexer</td>
+                        <td>
+                            Adição dos tokens <code>FOR</code>,
+                            <code>AND</code>, <code>OR</code>
+                        </td>
+                        <td>Revisão da posição das regras e teste manual</td>
+                    </tr>
+                    <tr>
+                        <td>Implementação do parser</td>
+                        <td>
+                            Adição da regra do <code>FOR</code>, declarações de
+                            precedência e operadores lógicos
+                        </td>
+                        <td>Validação da gramática contra ambiguidades</td>
+                    </tr>
+                    <tr>
+                        <td>Extensão da AST</td>
+                        <td>
+                            Criação de <code>struct forloop</code>,
+                            <code>newfor</code>, atualização de
+                            <code>treefree</code> e <code>eval</code>
+                        </td>
+                        <td>
+                            Verificação de leaks de memória e lógica de
+                            curto-circuito
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Correção de bugs</td>
+                        <td>
+                            Identificação e correção do erro de linkage de
+                            <code>symtab</code> e warnings do GCC
+                        </td>
+                        <td>Teste de compilação e execução</td>
+                    </tr>
+                    <tr>
+                        <td>Infraestrutura</td>
+                        <td>
+                            Criação do Makefile e suite de testes automatizada
+                        </td>
+                        <td>
+                            Validação dos casos de teste e ajuste de formatação
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Relatório</td>
+                        <td>
+                            Geração do conteúdo técnico e formatação em HTML/PDF
+                        </td>
+                        <td>Revisão estrutural e acadêmica do documento</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Fluxo Metodológico</h2>
+            <p>
+                O desenvolvimento seguiu um ciclo iterativo de
+                <em>pair programming</em> com o assistente:
+            </p>
+            <ol>
+                <li>
+                    <strong>Especificação:</strong> o estudante define o
+                    objetivo com base no plano de trabalho.
+                </li>
+                <li>
+                    <strong>Geração:</strong> a IA propõe uma implementação
+                    inicial.
+                </li>
+                <li>
+                    <strong>Revisão:</strong> o estudante analisa a proposta,
+                    identifica erros ou melhorias.
+                </li>
+                <li>
+                    <strong>Teste:</strong> compilação e execução da suite de
+                    testes.
+                </li>
+                <li>
+                    <strong>Refinamento:</strong> ajustes iterativos até
+                    aprovação de todos os testes.
+                </li>
+            </ol>
+
+            <div class="callout">
+                <strong>Nota de transparência:</strong> todos os trechos de
+                código gerados pela IA foram revisados, compilados e testados
+                manualmente. A lógica de avaliação da AST (<code>eval</code>) e
+                o gerenciamento de memória (<code>treefree</code>) foram
+                verificados para garantir ausência de vazamentos e comportamento
+                correto dos operadores lógicos e do laço <code>FOR</code>.
+            </div>
+        </section>
+
+        <!-- Chapter 09 -->
+        <section class="chapter">
+            <div class="chapter-num">09 · Referências</div>
+            <h1>Referências</h1>
+
+            <ul>
+                <li>
+                    LEVINE, John. <em>Flex &amp; Bison</em>. Editora O'Reilly,
+                    2009. 271 p.
+                </li>
+                <li>
+                    UTFPR – Câmpus Ponta Grossa.
+                    <em
+                        >Trabalho Prático 1 – Construção de Analisadores Léxico
+                        &amp; Sintático</em
+                    >. Disciplina de Compiladores 2026.1. Professor Gleifer Vaz
+                    Alves.
+                </li>
+                <li>
+                    UTFPR – Câmpus Ponta Grossa.
+                    <em
+                        >Apostila 04 – Bison: Analisador Sintático através de
+                        Calculadora (versão estendida)</em
+                    >. 2014.
+                </li>
+                <li>
+                    Gov.br/MEC. <em>Referencial de IA na Educação</em>.
+                    Disponível em:
+                    https://www.gov.br/mec/pt-br/referencial-de-ia-na-educacao
+                </li>
+            </ul>
+        </section>
+    </body>
+</html>

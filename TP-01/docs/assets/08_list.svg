@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="231" height="69">
+                    <polygon points="9 33 1 29 1 37" />
+                    <polygon points="17 33 9 29 9 37" />
+                    <rect x="71" y="19" width="48" height="32" />
+                    <rect
+                        x="69"
+                        y="17"
+                        width="48"
+                        height="32"
+                        class="nonterminal"
+                        fill="#FAF9F5"
+                        stroke="#2F2C1A"
+                    />
+                    <text
+                        class="nonterminal"
+                        x="79"
+                        y="37"
+                        font-family="Verdana,Sans-serif"
+                        font-size="12"
+                        fill="#101009"
+                    >
+                        stmt
+                    </text>
+                    <rect x="139" y="19" width="24" height="32" rx="10" />
+                    <rect
+                        x="137"
+                        y="17"
+                        width="24"
+                        height="32"
+                        class="terminal"
+                        fill="#F5F4ED"
+                        stroke="#2F2C1A"
+                        rx="10"
+                    />
+                    <text
+                        class="terminal"
+                        x="147"
+                        y="37"
+                        font-family="Verdana,Sans-serif"
+                        font-size="12"
+                        fill="#0D0C07"
+                        font-weight="bold"
+                    >
+                        ;
+                    </text>
+                    <path
+                        class="line"
+                        fill="none"
+                        stroke="#2F2C1A"
+                        stroke-width="1"
+                        d="m17 33 h2 m40 0 h10 m48 0 h10 m0 0 h10 m24 0 h10 m-132 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -12 q0 -10 10 -10 m112 32 l20 0 m-20 0 q10 0 10 -10 l0 -12 q0 -10 -10 -10 m-112 0 h10 m0 0 h102 m-152 32 h20 m152 0 h20 m-192 0 q10 0 10 10 m172 0 q0 -10 10 -10 m-182 10 v14 m172 0 v-14 m-172 14 q0 10 10 10 m152 0 q10 0 10 -10 m-162 10 h10 m0 0 h142 m23 -34 h-3"
+                    />
+                    <polygon
+                        points="221 33 229 29 229 37"
+                        fill="#2F2C1A"
+                        stroke="#2F2C1A"
+                    />
+                    <polygon
+                        points="221 33 213 29 213 37"
+                        fill="#2F2C1A"
+                        stroke="#2F2C1A"
+                    />
+                </svg>

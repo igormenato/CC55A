@@ -1,0 +1,100 @@
+<svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="283"
+                    height="203"
+                >
+                    <polygon points="9 139 1 135 1 143" />
+                    <polygon points="17 139 9 135 9 143" />
+                    <polygon
+                        points="51 141 58 125 104 125 111 141 104 157 58 157"
+                        fill="#FCFCF9"
+                        stroke="#2F2C1A"
+                    />
+                    <text
+                        class="regexp"
+                        x="64"
+                        y="143"
+                        font-family="Verdana,Sans-serif"
+                        font-size="12"
+                        fill="#14130B"
+                    >
+                        [a-z]
+                    </text>
+                    <polygon
+                        points="51 185 58 169 106 169 113 185 106 201 58 201"
+                        fill="#FCFCF9"
+                        stroke="#2F2C1A"
+                    />
+                    <text
+                        class="regexp"
+                        x="64"
+                        y="187"
+                        font-family="Verdana,Sans-serif"
+                        font-size="12"
+                        fill="#14130B"
+                    >
+                        [A-Z]
+                    </text>
+                    <polygon
+                        points="173 107 180 91 226 91 233 107 226 123 180 123"
+                        fill="#FCFCF9"
+                        stroke="#2F2C1A"
+                    />
+                    <text
+                        class="regexp"
+                        x="186"
+                        y="109"
+                        font-family="Verdana,Sans-serif"
+                        font-size="12"
+                        fill="#14130B"
+                    >
+                        [a-z]
+                    </text>
+                    <polygon
+                        points="173 63 180 47 228 47 235 63 228 79 180 79"
+                        fill="#FCFCF9"
+                        stroke="#2F2C1A"
+                    />
+                    <text
+                        class="regexp"
+                        x="186"
+                        y="65"
+                        font-family="Verdana,Sans-serif"
+                        font-size="12"
+                        fill="#14130B"
+                    >
+                        [A-Z]
+                    </text>
+                    <polygon
+                        points="173 19 180 3 228 3 235 19 228 35 180 35"
+                        fill="#FCFCF9"
+                        stroke="#2F2C1A"
+                    />
+                    <text
+                        class="regexp"
+                        x="186"
+                        y="21"
+                        font-family="Verdana,Sans-serif"
+                        font-size="12"
+                        fill="#14130B"
+                    >
+                        [0-9]
+                    </text>
+                    <path
+                        class="line"
+                        fill="none"
+                        stroke="#2F2C1A"
+                        stroke-width="1"
+                        d="m17 139 h2 m20 0 h10 m60 0 h10 m0 0 h2 m-102 0 h20 m82 0 h20 m-122 0 q10 0 10 10 m102 0 q0 -10 10 -10 m-112 10 v24 m102 0 v-24 m-102 24 q0 10 10 10 m82 0 q10 0 10 -10 m-92 10 h10 m62 0 h10 m40 -44 h10 m0 0 h72 m-102 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -14 q0 -10 10 -10 m82 34 l20 0 m-20 0 q10 0 10 -10 l0 -14 q0 -10 -10 -10 m-82 0 h10 m60 0 h10 m0 0 h2 m-92 10 l0 -44 q0 -10 10 -10 m92 54 l0 -44 q0 -10 -10 -10 m-82 0 h10 m62 0 h10 m-92 10 l0 -44 q0 -10 10 -10 m92 54 l0 -44 q0 -10 -10 -10 m-82 0 h10 m62 0 h10 m23 122 h-3"
+                    />
+                    <polygon
+                        points="273 139 281 135 281 143"
+                        fill="#2F2C1A"
+                        stroke="#2F2C1A"
+                    />
+                    <polygon
+                        points="273 139 265 135 265 143"
+                        fill="#2F2C1A"
+                        stroke="#2F2C1A"
+                    />
+                </svg>
