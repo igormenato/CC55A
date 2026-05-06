@@ -486,7 +486,7 @@
                 <li>
                     <strong>Operadores lógicos:</strong> <code>AND</code> e
                     <code>OR</code>, associativos à esquerda, com precedência
-                    menor que aritméticos e maior que comparações (para
+                    menor que aritméticos e menor que comparações (para
                     <code>AND</code>).
                 </li>
                 <li>
@@ -1189,6 +1189,7 @@ case 'R': {
 ├── aritmetica.in          ├── aritmetica.out
 ├── funcao_usuario.in      ├── funcao_usuario.out
 ├── if_then_else_true.in   ├── if_then_else_true.out
+├── if_then_else_false.in  ├── if_then_else_false.out
 ├── while_loop.in          ├── while_loop.out
 ├── for_basico.in          ├── for_basico.out
 ├── for_print.in           ├── for_print.out
@@ -1211,7 +1212,7 @@ case 'R': {
                     <tr>
                         <td>Regressão</td>
                         <td>
-                            aritmetica, funcao_usuario, if/then/else, while,
+                            aritmetica, funcao_usuario, if_then_else_true, if_then_else_false, while,
                             sqrt
                         </td>
                         <td>
@@ -1238,7 +1239,7 @@ case 'R': {
                     </tr>
                     <tr>
                         <td>Precedência</td>
-                        <td>precedencia_and_or, cmp_and, cmp_or</td>
+                        <td>precedencia_and_or, precedencia_cmp_and, precedencia_cmp_or</td>
                         <td>Verificar ordem correta de avaliação</td>
                     </tr>
                 </tbody>
@@ -1259,9 +1260,8 @@ case 'R': {
 
             <h2>Ferramenta Utilizada</h2>
             <p>
-                Foi utilizado o assistente de código
-                <strong>OpenCode (Kimi k2.6)</strong>, integrado ao ambiente de
-                desenvolvimento, para dar suporte nas seguintes etapas:
+                Foi utilizado o agente
+                <strong>OpenCode (Kimi K2.6, DeepSeek V4 Flash)</strong> para dar suporte nas seguintes etapas:
             </p>
 
             <table>
@@ -1277,25 +1277,8 @@ case 'R': {
                         <td>Entendimento da linguagem base</td>
                         <td>
                             Leitura e explicação dos arquivos de referência
-                            (<code>ref/src/</code>)
                         </td>
                         <td>Análise crítica das decisões de design</td>
-                    </tr>
-                    <tr>
-                        <td>Implementação do lexer</td>
-                        <td>
-                            Adição dos tokens <code>FOR</code>,
-                            <code>AND</code>, <code>OR</code>
-                        </td>
-                        <td>Revisão da posição das regras e teste manual</td>
-                    </tr>
-                    <tr>
-                        <td>Implementação do parser</td>
-                        <td>
-                            Adição da regra do <code>FOR</code>, declarações de
-                            precedência e operadores lógicos
-                        </td>
-                        <td>Validação da gramática contra ambiguidades</td>
                     </tr>
                     <tr>
                         <td>Extensão da AST</td>
@@ -1325,13 +1308,6 @@ case 'R': {
                         <td>
                             Validação dos casos de teste e ajuste de formatação
                         </td>
-                    </tr>
-                    <tr>
-                        <td>Relatório</td>
-                        <td>
-                            Geração do conteúdo técnico e formatação em HTML/PDF
-                        </td>
-                        <td>Revisão estrutural e acadêmica do documento</td>
                     </tr>
                 </tbody>
             </table>
@@ -1363,15 +1339,6 @@ case 'R': {
                     aprovação de todos os testes.
                 </li>
             </ol>
-
-            <div class="callout">
-                <strong>Nota de transparência:</strong> todos os trechos de
-                código gerados pela IA foram revisados, compilados e testados
-                manualmente. A lógica de avaliação da AST (<code>eval</code>) e
-                o gerenciamento de memória (<code>treefree</code>) foram
-                verificados para garantir ausência de vazamentos e comportamento
-                correto dos operadores lógicos e do laço <code>FOR</code>.
-            </div>
         </section>
 
         <!-- Chapter 09 -->
@@ -1387,22 +1354,9 @@ case 'R': {
                 <li>
                     UTFPR – Câmpus Ponta Grossa.
                     <em
-                        >Trabalho Prático 1 – Construção de Analisadores Léxico
-                        &amp; Sintático</em
-                    >. Disciplina de Compiladores 2026.1. Professor Gleifer Vaz
-                    Alves.
-                </li>
-                <li>
-                    UTFPR – Câmpus Ponta Grossa.
-                    <em
                         >Apostila 04 – Bison: Analisador Sintático através de
                         Calculadora (versão estendida)</em
                     >. 2014.
-                </li>
-                <li>
-                    Gov.br/MEC. <em>Referencial de IA na Educação</em>.
-                    Disponível em:
-                    https://www.gov.br/mec/pt-br/referencial-de-ia-na-educacao
                 </li>
             </ul>
         </section>
